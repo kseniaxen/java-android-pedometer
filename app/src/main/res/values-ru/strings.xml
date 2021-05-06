@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">java-android-pedometer</string>
+    <string name="today">Сегодня</string>
+    <string name="statistics">Статистика</string>
+</resources>
