@@ -9,13 +9,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class StatisticsActivity extends AppCompatActivity {
 
-    // константа: код запроса на переход к главной активити
-    // добавления новой задачи
-    public static final int MAIN_ACTIVITY_REQUEST_CODE = 0;
-    // константа: код запроса на переход к активити с историей
-    // добавления новой задачи
-    public static final int HISTORY_ACTIVITY_REQUEST_CODE = 1;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,12 +23,12 @@ public class StatisticsActivity extends AppCompatActivity {
                     return true;
                 case R.id.menuToday:
                     Intent intentToday = new Intent(StatisticsActivity.this, MainActivity.class);
-                    StatisticsActivity.this.startActivityForResult(intentToday, MAIN_ACTIVITY_REQUEST_CODE);
+                    StatisticsActivity.this.startActivity(intentToday);
                     overridePendingTransition(0,0);
                     return true;
                 case R.id.menuHistory:
                     Intent intentHistory = new Intent(StatisticsActivity.this, HistoryActivity.class);
-                    StatisticsActivity.this.startActivityForResult(intentHistory, HISTORY_ACTIVITY_REQUEST_CODE);
+                    StatisticsActivity.this.startActivity(intentHistory);
                     overridePendingTransition(0,0);
                     return true;
             }
