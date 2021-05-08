@@ -45,10 +45,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         Button mainResetButton = findViewById(R.id.mainResetButton);
         CircularProgressBar mainProgressCircular = findViewById(R.id.mainProgressCircular);
         Chronometer mainTimeChronometer = findViewById(R.id.mainTimeChronometer);
-
+        loadData();
+        
         bottomNavigationView.setOnNavigationItemSelectedListener((menuItem)->{
             switch(menuItem.getItemId()){
                 case R.id.menuStatistics:
+                    saveDataTime();
                     Intent intentStatistics = new Intent(MainActivity.this, StatisticsActivity.class);
                     MainActivity.this.startActivity(intentStatistics);
                     overridePendingTransition(0,0);
@@ -56,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 case R.id.menuToday:
                     return true;
                 case R.id.menuHistory:
+                    saveDataTime();
                     Intent intentHistory = new Intent(MainActivity.this, HistoryActivity.class);
                     MainActivity.this.startActivity(intentHistory);
                     overridePendingTransition(0,0);
@@ -119,7 +122,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 sensorManager.unregisterListener(MainActivity.this);
             }
         });
-        loadData();
+
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         sensorManager.unregisterListener(this);
     }
@@ -177,10 +180,19 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         editor.apply();
     }
 
+    private void saveDataTime(){
+        Chronometer mainTimeChronometer = findViewById(R.id.mainTimeChronometer);
+        SharedPreferences sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putLong("time",SystemClock.elapsedRealtime() - mainTimeChronometer.getBase());
+        editor.apply();
+    }
+
     private void loadData(){
         SharedPreferences sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE);
         float savedNumber = sharedPreferences.getFloat("key", 0f);
         previousTotalSteps = savedNumber;
-
+        long savedTime = sharedPreferences.getLong("time", 0L);
+        pauseAt = savedTime;
     }
 }
