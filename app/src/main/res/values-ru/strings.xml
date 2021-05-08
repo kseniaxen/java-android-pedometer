@@ -4,4 +4,9 @@
     <string name="today">Сегодня</string>
     <string name="statistics">Статистика</string>
     <string name="history">История</string>
+    <string name="step">Шаг</string>
+    <string name="goal">Цель</string>
+    <string name="km">Километров</string>
+    <string name="dialogApplyGoal">"Введите количество шагов для цели "</string>
+    <string name="dialogError">Ошибка: Неверные данные</string>
 </resources>

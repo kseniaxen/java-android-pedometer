@@ -11,9 +11,14 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Javaandroidpedometer">
-        <activity android:name=".HistoryActivity"></activity>
-        <activity android:name=".StatisticsActivity" />
-        <activity android:name=".MainActivity">
+        <activity
+            android:name=".HistoryActivity"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".StatisticsActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".MainActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
