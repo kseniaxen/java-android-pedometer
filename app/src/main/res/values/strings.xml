@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">java-android-pedometer</string>
+    <string name="app_name">Pedometer</string>
     <string name="today">Today</string>
     <string name="statistics">Statistics</string>
     <string name="history">History</string>

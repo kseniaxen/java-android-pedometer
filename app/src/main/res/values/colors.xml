@@ -8,9 +8,9 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="background">#F9F9F9</color>
-    <color name="select">#b860f4</color>
+    <color name="select">#d046e7</color>
     <color name="unselect">#e8e8e8</color>
-    <color name="primary">#8e3cf5</color>
+    <color name="primary">#933df4</color>
     <color name="textToday">#acadad</color>
     <color name="textGoal">#FFBD4C</color>
 </resources>
