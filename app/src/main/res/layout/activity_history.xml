@@ -39,9 +39,9 @@
                     android:layout_weight="0.5"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="20sp"
+                    android:textSize="18sp"
                     android:textColor="@color/textToday"
-                    android:text="Date"/>
+                    android:text="@string/date"/>
             </LinearLayout>
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -57,9 +57,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.5"
-                    android:textSize="20sp"
+                    android:textSize="18sp"
                     android:textColor="@color/textToday"
-                    android:text="Time"/>
+                    android:text="@string/time"/>
             </LinearLayout>
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -75,9 +75,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.5"
-                    android:textSize="20sp"
+                    android:textSize="18sp"
                     android:textColor="@color/textToday"
-                    android:text="Steps"/>
+                    android:text="@string/steps"/>
             </LinearLayout>
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -93,9 +93,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.5"
-                    android:textSize="20sp"
+                    android:textSize="18sp"
                     android:textColor="@color/textToday"
-                    android:text="Km"/>
+                    android:text="@string/km_short"/>
             </LinearLayout>
         </LinearLayout>
 

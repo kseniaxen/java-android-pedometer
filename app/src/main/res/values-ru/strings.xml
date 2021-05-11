@@ -9,4 +9,9 @@
     <string name="km">Километров</string>
     <string name="dialogApplyGoal">"Введите количество шагов для цели "</string>
     <string name="dialogError">Ошибка: Неверные данные</string>
+    <string name="addRecord">Добавлена новая активность</string>
+    <string name="date">Дата</string>
+    <string name="time">Время</string>
+    <string name="steps">Шаги</string>
+    <string name="km_short">Км</string>
 </resources>

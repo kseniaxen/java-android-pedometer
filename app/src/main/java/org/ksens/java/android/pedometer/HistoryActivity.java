@@ -4,11 +4,14 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.ListView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class HistoryActivity extends AppCompatActivity {
 
+    private RecordListAdapter adapter = null;
+    private IRecordDao recordDao = Global.recordDao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,6 +20,13 @@ public class HistoryActivity extends AppCompatActivity {
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setSelectedItemId(R.id.menuHistory);
+        // представление списка
+        ListView recordItemsListView = findViewById(R.id.historyRecordItemsListView);
+        // пользовательский соединитель представления со списком данных
+        adapter =
+                new RecordListAdapter(this, R.layout.record_list_item, recordDao.findAllReverse());
+        // подключение списка моделей данных к представлению списка
+        recordItemsListView.setAdapter(adapter);
 
         bottomNavigationView.setOnNavigationItemSelectedListener((menuItem)->{
             switch(menuItem.getItemId()){
@@ -35,5 +45,6 @@ public class HistoryActivity extends AppCompatActivity {
             }
             return false;
         });
+
     }
 }

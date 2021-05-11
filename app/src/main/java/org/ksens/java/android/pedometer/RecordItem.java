@@ -13,7 +13,7 @@ public class RecordItem extends SugarRecord {
     //пройдено километров
     private Double km;
     //дата
-    private  String date;
+    private String date;
 
     public RecordItem() {
 

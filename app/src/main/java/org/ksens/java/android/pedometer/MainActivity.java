@@ -17,6 +17,7 @@ import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.text.InputType;
+import android.util.Log;
 import android.view.View;
 import android.widget.Chronometer;
 import android.widget.EditText;
@@ -43,6 +44,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private float previousTotalSteps = 0f;
 
     private Long pauseAt = 0L;
+
+    private String selectedDateString =
+            new SimpleDateFormat("dd.MM.yyyy").format(new Date());
+    private IRecordDao recordDao = Global.recordDao;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -129,6 +134,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         mainResetButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                long resetTimeMemory = SystemClock.elapsedRealtime() - mainTimeChronometer.getBase();
                 mainTimeChronometer.setBase(SystemClock.elapsedRealtime());
                 mainTimeChronometer.stop();
                 pauseAt = 0L;
@@ -141,6 +147,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 mainStartButton.setVisibility(View.VISIBLE);
                 mainStartButton.setEnabled(true);
 
+                Integer currentSteps = (int)totalSteps - (int)previousTotalSteps;
+                recordDao.save(new RecordItem(
+                        currentSteps,
+                        resetTimeMemory,
+                        calcKilometers(currentSteps),
+                        selectedDateString
+                ));
+                Toast.makeText(MainActivity.this,R.string.addRecord,Toast.LENGTH_LONG).show();
                 previousTotalSteps = totalSteps;
                 mainStepsTakenTextView.setText(String.valueOf(0));
                 mainProgressCircular.setProgressWithAnimation(0f);

@@ -10,8 +10,11 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.text.DateFormat;
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -20,6 +23,7 @@ public class RecordListAdapter extends ArrayAdapter<RecordItem> {
     private int itemLayout;
     private List<RecordItem> items;
     private Context context;
+    private DecimalFormat df;
 
     // конструктор, который принимает ссылку на активити, дескриптор представления,
     // список моделей данных
@@ -54,15 +58,27 @@ public class RecordListAdapter extends ArrayAdapter<RecordItem> {
         //с конца списка (индекс, начиная с последнего)
         RecordItem item = items.get(position);
 
-        dateView.setText(new SimpleDateFormat("MM/dd").format(item.getDate()));
-        String formattedDouble = new DecimalFormat("#0.00").format(transformTime(item.getTime()));
-        timeView.setText(formattedDouble);
-        stepsView.setText(String.valueOf(item.getSteps()));
-        kmView.setText(String.valueOf(item.getKm()));
-        return view;
-    }
+        DateFormat outputFormat = new SimpleDateFormat("MM/dd");
+        DateFormat inputFormat = new SimpleDateFormat("dd.MM.yyyy");
 
-    private double transformTime(long time){
-        return time/60000;
+        String inputText = item.getDate();
+        Date date = null;
+        try {
+            date = inputFormat.parse(inputText);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        String outputText = outputFormat.format(date);
+        dateView.setText(outputText);
+
+        SimpleDateFormat timeFormat = new SimpleDateFormat("mm:ss");
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(item.getTime());
+        timeView.setText(timeFormat.format(calendar.getTime()));
+
+        stepsView.setText(item.getSteps().toString());
+        df = new DecimalFormat("#.##");
+        kmView.setText(df.format(item.getKm()));
+        return view;
     }
 }

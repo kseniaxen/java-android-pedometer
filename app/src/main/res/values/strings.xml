@@ -8,4 +8,9 @@
     <string name="km">Kilometers</string>
     <string name="dialogApplyGoal">Input step goal</string>
     <string name="dialogError">Error: Invalid data</string>
+    <string name="addRecord">Adding new record</string>
+    <string name="date">Date</string>
+    <string name="time">Time</string>
+    <string name="steps">Steps</string>
+    <string name="km_short">Km</string>
 </resources>
