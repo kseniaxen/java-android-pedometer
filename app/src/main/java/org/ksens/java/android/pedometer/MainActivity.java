@@ -148,13 +148,15 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 mainStartButton.setEnabled(true);
 
                 Integer currentSteps = (int)totalSteps - (int)previousTotalSteps;
-                recordDao.save(new RecordItem(
-                        currentSteps,
-                        resetTimeMemory,
-                        calcKilometers(currentSteps),
-                        selectedDateString
-                ));
-                Toast.makeText(MainActivity.this,R.string.addRecord,Toast.LENGTH_LONG).show();
+                if(currentSteps > 0){
+                    recordDao.save(new RecordItem(
+                            currentSteps,
+                            resetTimeMemory,
+                            calcKilometers(currentSteps),
+                            selectedDateString
+                    ));
+                    Toast.makeText(MainActivity.this,R.string.addRecord,Toast.LENGTH_LONG).show();
+                }
                 previousTotalSteps = totalSteps;
                 mainStepsTakenTextView.setText(String.valueOf(0));
                 mainProgressCircular.setProgressWithAnimation(0f);

@@ -13,4 +13,9 @@
     <string name="time">Time</string>
     <string name="steps">Steps</string>
     <string name="km_short">Km</string>
+    <string name="loading">Loading...</string>
+    <string name="days">Days</string>
+    <string name="month">Month</string>
+    <string name="totalSteps">Total steps</string>
+    <string name="totalKm">Total kilometers</string>
 </resources>

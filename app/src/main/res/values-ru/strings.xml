@@ -14,4 +14,9 @@
     <string name="time">Время</string>
     <string name="steps">Шаги</string>
     <string name="km_short">Км</string>
+    <string name="loading">Загрузка...</string>
+    <string name="days">По дням</string>
+    <string name="month">Месяц</string>
+    <string name="totalSteps">Всего шагов</string>
+    <string name="totalKm">Всего километров</string>
 </resources>
