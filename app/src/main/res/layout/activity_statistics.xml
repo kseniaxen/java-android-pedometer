@@ -20,35 +20,41 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <Button
+                    android:id="@+id/statisticsWeekButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/textToday"
-                    android:text="@string/days"
+                    android:text="@string/week"
                     android:layout_margin="5sp"
-                    android:layout_weight="0.5"/>
+                    android:layout_weight="0.5" />
                 <Button
+                    android:id="@+id/statisticsMonthButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/textToday"
                     android:layout_weight="0.5"
                     android:layout_margin="5sp"
-                    android:text="@string/month"/>
+                    android:text="@string/month" />
             </LinearLayout>
-            <com.anychart.AnyChartView
-                android:id="@+id/statisticsChartAnyChartView"
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginBottom="10sp"
-                android:layout_marginTop="15sp"
-                android:layout_marginLeft="15sp"
-                android:layout_marginRight="15sp"/>
+                android:layout_height="match_parent">
+                <com.anychart.AnyChartView
+                    android:id="@+id/statisticsChartWeekAnyChartView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="10sp"
+                    android:layout_marginTop="15sp"
+                    android:layout_marginLeft="15sp"
+                    android:layout_marginRight="15sp" />
+                <TableLayout
+                    android:id="@+id/statisticsTableLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:visibility="invisible">
+                </TableLayout>
+            </FrameLayout>
         </LinearLayout>
-        <ProgressBar
-            android:id="@+id/progress_bar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:indeterminateTint="@color/select"/>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"

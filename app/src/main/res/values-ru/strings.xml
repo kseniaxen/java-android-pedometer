@@ -15,8 +15,11 @@
     <string name="steps">Шаги</string>
     <string name="km_short">Км</string>
     <string name="loading">Загрузка...</string>
-    <string name="days">По дням</string>
+    <string name="days">Дни</string>
     <string name="month">Месяц</string>
     <string name="totalSteps">Всего шагов</string>
     <string name="totalKm">Всего километров</string>
+    <string name="week">Неделя</string>
+    <string name="week_activity">Активность за неделю</string>
+    <string name="month_activity">Активность по месяцам</string>
 </resources>
