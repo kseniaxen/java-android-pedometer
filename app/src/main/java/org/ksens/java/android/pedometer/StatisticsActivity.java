@@ -8,10 +8,13 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.anychart.AnyChart;
@@ -34,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 public class StatisticsActivity extends AppCompatActivity {
@@ -45,6 +49,7 @@ public class StatisticsActivity extends AppCompatActivity {
     private Button statisticsWeekButton;
     private Button statisticsMonthButton;
     private AnyChartView statisticsChartWeekAnyChartView;
+    private TableLayout statisticsTableLayout;
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
@@ -58,7 +63,7 @@ public class StatisticsActivity extends AppCompatActivity {
         statisticsMonthButton = findViewById(R.id.statisticsMonthButton);
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         statisticsChartWeekAnyChartView = findViewById(R.id.statisticsChartWeekAnyChartView);
-        TableLayout statisticsTableLayout = findViewById(R.id.statisticsTableLayout);
+        statisticsTableLayout = findViewById(R.id.statisticsTableLayout);
 
         Double totalKm = recordDao.findAll().stream().mapToDouble(x -> x.getKm()).sum();
         Integer totalSteps = recordDao.findAll().stream().mapToInt(x -> x.getSteps()).sum();
@@ -78,8 +83,8 @@ public class StatisticsActivity extends AppCompatActivity {
         statisticsMonthButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                /*
                 statisticsChartWeekAnyChartView.setVisibility(View.INVISIBLE);
+                statisticsTableLayout.setVisibility(View.VISIBLE);
                 statisticsWeekButton.setBackgroundColor(getResources().getColor(R.color.background));
                 statisticsWeekButton.setTextColor(getResources().getColor(R.color.textToday));
                 statisticsMonthButton.setBackgroundColor(getResources().getColor(R.color.textGoal));
@@ -93,7 +98,7 @@ public class StatisticsActivity extends AppCompatActivity {
                     Date dateFormat = null;
                     try {
                         dateFormat = new SimpleDateFormat("dd.MM.yyyy").parse(d);
-                        DateFormat dateFormatMonth = new SimpleDateFormat("MM");
+                        DateFormat dateFormatMonth = new SimpleDateFormat("MM.yyyy");
                         months.add(dateFormatMonth.format(dateFormat));
                     } catch (ParseException e) {
                         e.printStackTrace();
@@ -106,7 +111,7 @@ public class StatisticsActivity extends AppCompatActivity {
                     for (RecordItem recordItem:recordDao.findAll()) {
                         try {
                             Date dateFormat = new SimpleDateFormat("dd.MM.yyyy").parse(recordItem.getDate());
-                            DateFormat dateFormatMonth = new SimpleDateFormat("MM");
+                            DateFormat dateFormatMonth = new SimpleDateFormat("MM.yyyy");
                             if(dateFormatMonth.format(dateFormat).equals(month)){
                                 steps += recordItem.getSteps();
                             }
@@ -120,7 +125,7 @@ public class StatisticsActivity extends AppCompatActivity {
 
                 Collections.reverse(recordItemSteps);
                 Collections.reverse(uniqueMonths);
-
+/*
                 for (int i = 0; i < uniqueMonths.size(); i++){
                     if(i >= KEY_MONTH){
                         break;
@@ -132,8 +137,35 @@ public class StatisticsActivity extends AppCompatActivity {
                         data.add(new ValueDataEntry(uniqueMonths.get(i), recordItemSteps.get(i)));
                     }
                 }
-                 */
 
+ */
+                statisticsTableLayout.removeAllViews();
+                TableRow row = (TableRow) LayoutInflater.from(StatisticsActivity.this).inflate(getResources().getLayout(R.layout.table_row), null);
+                ((TextView)row.findViewById(R.id.attrib_name)).setText(getResources().getString(R.string.month));
+                ((TextView)row.findViewById(R.id.attrib_value)).setText(getResources().getString(R.string.steps));
+                ((TextView)row.findViewById(R.id.attrib_name)).setAllCaps(true);
+                ((TextView)row.findViewById(R.id.attrib_value)).setAllCaps(true);
+                ((TextView)row.findViewById(R.id.attrib_name)).setTextSize(18);
+                ((TextView)row.findViewById(R.id.attrib_value)).setTextSize(18);
+                row.setBackgroundColor(getResources().getColor(R.color.white));
+                statisticsTableLayout.addView(row);
+                for(int i = 0; i < uniqueMonths.size(); i++){
+                    if(i >= KEY_MONTH){
+                        break;
+                    }
+                    row = (TableRow) LayoutInflater.from(StatisticsActivity.this).inflate(getResources().getLayout(R.layout.table_row), null);
+                    Date dateFormat = null;
+                    try {
+                        dateFormat = new SimpleDateFormat("MM.yyyy").parse(uniqueMonths.get(i));
+                        DateFormat dateFormatMonth = new SimpleDateFormat("MMM yyyy", Locale.getDefault());
+                        ((TextView)row.findViewById(R.id.attrib_name)).setText(dateFormatMonth.format(dateFormat));
+                        ((TextView)row.findViewById(R.id.attrib_value)).setText(recordItemSteps.get(i).toString());
+                        statisticsTableLayout.addView(row);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                }
+                statisticsTableLayout.requestLayout();
             }
         });
 
@@ -159,6 +191,7 @@ public class StatisticsActivity extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void onButtonWeekState(){
+        statisticsTableLayout.setVisibility(View.INVISIBLE);
         statisticsChartWeekAnyChartView.setVisibility(View.VISIBLE);
         Cartesian cartesian = AnyChart.column();
         List<DataEntry> data = new ArrayList<>();
