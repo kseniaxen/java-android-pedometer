@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Крокомір</string>
+    <string name="today">Сьогодні</string>
+    <string name="statistics">Статистика</string>
+    <string name="history">Історія</string>
+    <string name="step">Крок</string>
+    <string name="goal">Ціль</string>
+    <string name="km">Кілометри</string>
+    <string name="dialogApplyGoal">Введіть кількість кроків для мети</string>
+    <string name="dialogError">Помилка: Невірні дані</string>
+    <string name="addRecord">Додана нова активність</string>
+    <string name="date">Дата</string>
+    <string name="time">Час</string>
+    <string name="steps">Кроки</string>
+    <string name="km_short">Км</string>
+    <string name="loading">Завантаження...</string>
+    <string name="days">Дні</string>
+    <string name="month">Місяць</string>
+    <string name="totalSteps">Всього кроків</string>
+    <string name="totalKm">Всього кілометрів</string>
+    <string name="week">Неділя</string>
+    <string name="week_activity">Активність за тиждень</string>
+    <string name="month_activity">Активність по місяцях</string>
+</resources>
