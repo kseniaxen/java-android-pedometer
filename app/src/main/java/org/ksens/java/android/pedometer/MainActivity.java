@@ -1,5 +1,6 @@
 package org.ksens.java.android.pedometer;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
@@ -14,6 +15,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.text.InputType;
@@ -25,14 +27,22 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.github.signaflo.timeseries.TimePeriod;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.mikhaellopez.circularprogressbar.CircularProgressBar;
 
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
+import java.util.Random;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
@@ -48,10 +58,56 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private String selectedDateString =
             new SimpleDateFormat("dd.MM.yyyy").format(new Date());
     private IRecordDao recordDao = Global.recordDao;
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //RecordItem.deleteAll(RecordItem.class);
+/*
+        String date1 = "01.07.2021";
+        String date2 = "01.08.2021";
+
+        LocalDate startDate = LocalDate.parse(date1, DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+        LocalDate endDate = LocalDate.parse(date2, DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+
+        long numOfDays = ChronoUnit.DAYS.between(startDate, endDate);
+
+        List<LocalDate> listOfDates = Stream.iterate(startDate, date -> date.plusDays(1))
+                .limit(numOfDays)
+                .collect(Collectors.toList());
+
+        Random random = new Random();
+        for(LocalDate localDate: listOfDates) {
+            int steps =  random.nextInt((8000 - 1500) + 1) + 1500;
+
+            recordDao.save(new RecordItem(
+                    steps,
+                    Long.parseLong(String.valueOf(random.nextInt((100000 - 50000) + 1) + 50000)),
+                    calcKilometers(steps),
+                    localDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))
+            ));
+
+            Log.d("Day Steps Km Time", localDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")) + " " +
+                    steps + " " +
+                    steps * 0.7/1000 + " " +
+                    Long.parseLong(String.valueOf(random.nextInt((100000 - 50000) + 1) + 50000)));
+
+
+        }
+
+ */
+
+        PredictionARIMA predictionARIMA = new PredictionARIMA();
+        predictionARIMA.PredictionPerMonthForOneDay(
+                predictionARIMA.CreatePredictionItem("01.07.2021",
+                        "01.08.2021",
+                        TimePeriod.oneDay(),
+                        TimePeriod.oneWeek(),
+                        1)
+        );
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setSelectedItemId(R.id.menuToday);
