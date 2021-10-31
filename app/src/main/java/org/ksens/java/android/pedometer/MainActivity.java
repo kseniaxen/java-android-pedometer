@@ -99,16 +99,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
 
  */
-
-        PredictionARIMA predictionARIMA = new PredictionARIMA();
-        predictionARIMA.PredictionPerMonthForOneDay(
-                predictionARIMA.CreatePredictionItem("01.07.2021",
-                        "01.08.2021",
-                        TimePeriod.oneDay(),
-                        TimePeriod.oneWeek(),
-                        1)
-        );
-
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setSelectedItemId(R.id.menuToday);
 
@@ -131,10 +121,34 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         Date currentDate = new Date();
         DateFormat dateFormat = new SimpleDateFormat("EEEE, d MMM", Locale.getDefault());
         mainDateTextView.setText(dateFormat.format(currentDate));
-
         loadData();
-        mainTotalMaxTextView.setText(String.valueOf(loadDataGoal()));
-        mainProgressCircular.setProgressMax(Float.valueOf(loadDataGoal()));
+        //mainTotalMaxTextView.setText(String.valueOf(loadDataGoal()));
+        //mainProgressCircular.setProgressMax(Float.valueOf(loadDataGoal()));
+
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                PredictionARIMA predictionARIMA = new PredictionARIMA();
+                Integer predictionSteps = predictionARIMA.PredictionPerMonthForOneDay(
+                        predictionARIMA.CreatePredictionItem("01.07.2021",
+                                "01.08.2021",
+                                TimePeriod.oneDay(),
+                                TimePeriod.oneWeek(),
+                                1)
+                );
+                mainTotalMaxTextView.post(new Runnable() {
+                    public void run() {
+                        mainTotalMaxTextView.setText(
+                                predictionSteps.toString()
+                        );
+                        mainProgressCircular.setProgressMax(predictionSteps.floatValue());
+                    }
+                });
+            }
+        };
+        Thread thread = new Thread(runnable);
+        thread.start();
+
         bottomNavigationView.setOnNavigationItemSelectedListener((menuItem)->{
             switch(menuItem.getItemId()){
                 case R.id.menuStatistics:
