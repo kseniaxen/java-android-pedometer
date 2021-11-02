@@ -35,6 +35,7 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
@@ -44,6 +45,7 @@ import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@RequiresApi(api = Build.VERSION_CODES.O)
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
     private final double HUMAN_STEP_LENGTH_M = 0.7;
@@ -55,11 +57,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     private Long pauseAt = 0L;
 
-    private String selectedDateString =
+    private final String selectedDateString =
             new SimpleDateFormat("dd.MM.yyyy").format(new Date());
+    private final String DateEndPrediction = new SimpleDateFormat("dd.MM.yyyy").format(new Date().from(LocalDate.now().minusDays(31).atStartOfDay(ZoneId.systemDefault()).toInstant()));
     private IRecordDao recordDao = Global.recordDao;
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -122,16 +124,15 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         DateFormat dateFormat = new SimpleDateFormat("EEEE, d MMM", Locale.getDefault());
         mainDateTextView.setText(dateFormat.format(currentDate));
         loadData();
-        //mainTotalMaxTextView.setText(String.valueOf(loadDataGoal()));
-        //mainProgressCircular.setProgressMax(Float.valueOf(loadDataGoal()));
 
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
                 PredictionARIMA predictionARIMA = new PredictionARIMA();
                 Integer predictionSteps = predictionARIMA.PredictionPerMonthForOneDay(
-                        predictionARIMA.CreatePredictionItem("01.07.2021",
-                                "01.08.2021",
+                        predictionARIMA.CreatePredictionItem(
+                                DateEndPrediction,
+                                selectedDateString,
                                 TimePeriod.oneDay(),
                                 TimePeriod.oneWeek(),
                                 1)
@@ -237,47 +238,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             }
         });
 
-        mainTotalMaxTextView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                builder.setTitle(R.string.dialogApplyGoal);// Set up the input
-                final EditText input = new EditText(MainActivity.this);
-                input.setInputType(InputType.TYPE_CLASS_TEXT);
-                builder.setView(input);
-                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        try {
-                            int value = Integer.parseInt(input.getText().toString());
-                            saveDataGoal(value);
-                            mainTotalMaxTextView.setText(String.valueOf(value));
-                            mainProgressCircular.setProgressMax(Float.valueOf(value));
-                        } catch (NumberFormatException e) {
-                            dialog.cancel();
-                            Toast.makeText(MainActivity.this,R.string.dialogError,Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
-                AlertDialog dialog = builder.create();
-                dialog.setOnShowListener(new DialogInterface.OnShowListener() {
-                    @Override
-                    public void onShow(DialogInterface arg0) {
-                        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(getResources().getColor(R.color.primary));
-                        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(getResources().getColor(R.color.primary));
-                    }
-                });
-                dialog.show();
-                return true;
-            }
-        });
-
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         sensorManager.unregisterListener(this);
     }
@@ -346,24 +306,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         editor.apply();
     }
 
-    private void saveDataGoal(int goal) {
-        SharedPreferences sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putInt("goal",goal);
-        editor.apply();
-    }
-
     private void loadData(){
         SharedPreferences sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE);
         float savedNumber = sharedPreferences.getFloat("key", 0f);
         previousTotalSteps = savedNumber;
         long savedTime = sharedPreferences.getLong("time", 0L);
         pauseAt = savedTime;
-    }
-
-    private int loadDataGoal(){
-        SharedPreferences sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE);
-        return sharedPreferences.getInt("goal", 2500);
     }
 
     private double calcKilometers(int steps){

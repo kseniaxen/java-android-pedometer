@@ -3,7 +3,6 @@ package org.ksens.java.android.pedometer;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -11,8 +10,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -33,25 +30,41 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class StatisticsActivity extends AppCompatActivity {
 
     private IRecordDao recordDao = Global.recordDao;
     private DecimalFormat df;
-    private int KEY_WEEK=7;
-    private int KEY_MONTH=12;
+    private int KEY_WEEK = 7;
+    private int KEY_MONTH = 12;
     private Button statisticsWeekButton;
     private Button statisticsMonthButton;
     private AnyChartView statisticsChartWeekAnyChartView;
     private TableLayout statisticsTableLayout;
+    private final String CurrentDate =
+            new SimpleDateFormat("dd.MM.yyyy").format(new Date());
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private final String EndDateWeek = new SimpleDateFormat("dd.MM.yyyy").format(new Date().from(LocalDate.now().minusDays(7).atStartOfDay(ZoneId.systemDefault()).toInstant()));
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private DateTimeFormatter DateFormat = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -189,7 +202,7 @@ public class StatisticsActivity extends AppCompatActivity {
         });
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void onButtonWeekState(){
         statisticsTableLayout.setVisibility(View.INVISIBLE);
         statisticsChartWeekAnyChartView.setVisibility(View.VISIBLE);
@@ -201,38 +214,62 @@ public class StatisticsActivity extends AppCompatActivity {
         statisticsWeekButton.setBackgroundColor(getResources().getColor(R.color.textGoal));
         statisticsWeekButton.setTextColor(getResources().getColor(R.color.black));
 
-        List<RecordItem> recordItemsData = RecordItem.findWithQuery(RecordItem.class, "SELECT DISTINCT date FROM RECORD_ITEM");
-        List<String> date = recordItemsData.stream().map(RecordItem::getDate).collect(Collectors.toList());
+        ArrayList<RecordItem> recordItems = new ArrayList<>();
+        List<RecordItem> itemsQuery = RecordItem.findWithQuery(RecordItem.class, "SELECT * FROM RECORD_ITEM");
 
-        List<Integer> recordItemSteps = new ArrayList<>();
-        int steps = 0;
+        LocalDate startDate = LocalDate.parse(EndDateWeek, DateFormat);
+        LocalDate endDate = LocalDate.parse(CurrentDate, DateFormat);
 
-        for (String d:date){
-            for (RecordItem recordItem:recordDao.findAll()) {
-                if(recordItem.getDate().equals(d)){
-                    steps += recordItem.getSteps();
-                }
+        long numOfDays = ChronoUnit.DAYS.between(startDate, endDate);
+
+        List<LocalDate> listOfDates = Stream.iterate(startDate, date -> date.plusDays(1))
+                .limit(numOfDays)
+                .collect(Collectors.toList());
+        ArrayList<LocalDate> datesUse = new ArrayList<>();
+        for(RecordItem recordItem: itemsQuery){
+            if (listOfDates.stream().anyMatch(i -> i.format(DateFormat).equals(recordItem.getDate()))) {
+                recordItems.add(recordItem);
+                datesUse.add(LocalDate.parse(recordItem.getDate(),DateFormat));
             }
-            recordItemSteps.add(steps);
-            steps = 0;
         }
 
-        Collections.reverse(recordItemSteps);
-        Collections.reverse(date);
+        Set<LocalDate> mapDates = new HashSet<>(datesUse);
+        datesUse.clear();
+        datesUse.addAll(mapDates);
 
-        //ProgressBar progress_circular = findViewById(R.id.progress_circular);
-        //statisticsChartWeekAnyChartView.setProgressBar(progress_circular);
-
-        for (int i = 0; i < date.size(); i++){
-            if(i >= KEY_WEEK){
-                break;
+        ArrayList<LocalDate> listOfNoUseDates = new ArrayList<>();
+        listOfDates.forEach(date -> {
+            if(datesUse.stream().noneMatch(i -> i.equals(date))){
+                listOfNoUseDates.add(date);
             }
-            if(date.get(i).equals(null) && recordItemSteps.get(i).equals(null)){
-                data.add(new ValueDataEntry("0",0));
+        });
+        listOfNoUseDates.forEach(date ->
+                recordItems.add(new RecordItem(
+                        0,
+                        0L,
+                        0.0,
+                        date.format(DateFormat)
+                ))
+        );
+
+        Map<String, RecordItem> recordItemMap = new HashMap<>();
+        for(RecordItem recordItem : recordItems){
+            RecordItem current = recordItemMap.get(recordItem.getDate());
+            if(current == null){
+                recordItemMap.put(recordItem.getDate(), recordItem);
             }else{
-                data.add(new ValueDataEntry(date.get(i), recordItemSteps.get(i)));
+                current.setSteps(current.getSteps() + recordItem.getSteps());
             }
         }
+
+        Collection<RecordItem> collection = recordItemMap.values();
+        ArrayList<RecordItem> newRecordItems = new ArrayList<>(collection);
+        newRecordItems.sort((a,b) -> ParseDate(a.getDate()).compareTo(ParseDate(b.getDate())));
+
+        newRecordItems.forEach(item -> {
+            data.add(new ValueDataEntry(item.getDate(), item.getSteps()));
+        });
+
         Column column = cartesian.column(data);
         column.color("purple");
         column.tooltip()
@@ -258,5 +295,15 @@ public class StatisticsActivity extends AppCompatActivity {
         cartesian.yAxis(0).title(getResources().getString(R.string.steps));
 
         statisticsChartWeekAnyChartView.setChart(cartesian);
+    }
+
+    private Date ParseDate(String date){
+        SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
+        try {
+            return format.parse(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

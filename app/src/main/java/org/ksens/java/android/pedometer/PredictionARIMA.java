@@ -15,22 +15,27 @@ import com.github.signaflo.timeseries.model.arima.ArimaOrder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class PredictionARIMA implements IPredictionARIMADao {
     @RequiresApi(api = Build.VERSION_CODES.O)
     private DateTimeFormatter DateFormat = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    private final double HUMAN_STEP_LENGTH_M = 0.7;
     private final Integer START_p = 0;
     private final Integer START_d = 0;
     private final Integer START_q = 0;
@@ -45,7 +50,7 @@ public class PredictionARIMA implements IPredictionARIMADao {
     private final Integer END_D = 1;
     private final Integer END_Q = 1;
 
-    private final Integer WINSORIZING_BOTTOM_LINE = 1000;
+    private final Integer WINSORIZING_BOTTOM_LINE = 2000;
 
     public class ModelARIMA {
         public Double Steps;
@@ -85,11 +90,32 @@ public class PredictionARIMA implements IPredictionARIMADao {
         List<LocalDate> listOfDates = Stream.iterate(startDate, date -> date.plusDays(1))
                 .limit(numOfDays)
                 .collect(Collectors.toList());
+        ArrayList<LocalDate> datesUse = new ArrayList<>();
         for(RecordItem recordItem: itemsQuery){
             if (listOfDates.stream().anyMatch(i -> i.format(DateFormat).equals(recordItem.getDate()))) {
                 recordItems.add(recordItem);
+                datesUse.add(LocalDate.parse(recordItem.getDate(),DateFormat));
             }
         }
+
+        Set<LocalDate> mapDates = new HashSet<>(datesUse);
+        datesUse.clear();
+        datesUse.addAll(mapDates);
+
+        ArrayList<LocalDate> listOfNoUseDates = new ArrayList<>();
+        listOfDates.forEach(date -> {
+            if(datesUse.stream().noneMatch(i -> i.equals(date))){
+                listOfNoUseDates.add(date);
+            }
+        });
+        listOfNoUseDates.forEach(date ->
+            recordItems.add(new RecordItem(
+                    WINSORIZING_BOTTOM_LINE,
+                    0L,
+                    calcKilometers(WINSORIZING_BOTTOM_LINE),
+                    date.format(DateFormat)
+            ))
+        );
 
         Map<String, RecordItem> recordItemMap = new HashMap<>();
         for(RecordItem recordItem : recordItems){
@@ -100,6 +126,7 @@ public class PredictionARIMA implements IPredictionARIMADao {
                 current.setSteps(current.getSteps() + recordItem.getSteps());
             }
         }
+
         Collection<RecordItem> collection = recordItemMap.values();
         ArrayList<RecordItem> newRecordItems = new ArrayList<>(collection);
         newRecordItems.sort((a,b) -> ParseDate(a.getDate()).compareTo(ParseDate(b.getDate())));
@@ -110,7 +137,7 @@ public class PredictionARIMA implements IPredictionARIMADao {
             }
         }
 
-        //newRecordItems.forEach(recordItem -> Log.d("RECORD ", recordItem.getDate() + " " + recordItem.getSteps()));
+        newRecordItems.forEach(recordItem -> Log.d("RECORD ", recordItem.getDate() + " " + recordItem.getSteps()));
 
         return new PredictionItem(recordItems, dateStart, dateEnd, period, seasonality, forecast);
     }
@@ -123,7 +150,7 @@ public class PredictionARIMA implements IPredictionARIMADao {
         int key = 0;
         for(RecordItem recordItem: records){
             steps[key] = recordItem.getSteps();
-            Log.d("STEPS",String.valueOf(steps[key]));
+            //Log.d("STEPS",String.valueOf(steps[key]));
             key++;
         }
 
@@ -151,10 +178,12 @@ public class PredictionARIMA implements IPredictionARIMADao {
         Arima model = Arima.model(series, order, predictionItem.GetSeasonality());
         Forecast forecast = model.forecast(predictionItem.GetForecast());
         models.add(new ModelARIMA(forecast.pointEstimates().mean(),model.aic(),0, 1, 1, 1, 1, 1));
- */
+
         models.forEach(model -> {
             Log.d("Model", model.Steps + " " + model.Aic + " p " + model.p + " d "+ model.d + " q "+ model.q + " P "+ model.P + " D "+ model.D + " Q "+ model.Q + " ");
         });
+
+ */
 
         ModelARIMA chooseModel = models
                 .stream()
@@ -173,5 +202,9 @@ public class PredictionARIMA implements IPredictionARIMADao {
             e.printStackTrace();
         }
         return null;
+    }
+
+    private double calcKilometers(int steps){
+        return (steps*HUMAN_STEP_LENGTH_M)/1000;
     }
 }

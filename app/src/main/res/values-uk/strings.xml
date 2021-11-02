@@ -22,4 +22,5 @@
     <string name="week">Неділя</string>
     <string name="week_activity">Активність за тиждень</string>
     <string name="month_activity">Активність по місяцях</string>
+    <string name="calculation">Обчислюється...</string>
 </resources>

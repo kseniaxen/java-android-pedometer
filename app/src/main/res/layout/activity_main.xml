@@ -66,7 +66,8 @@
         android:id="@+id/mainTotalMaxTextView"
         android:layout_below="@+id/mainGoalTextView"
         android:layout_centerInParent="true"
-        android:textSize="20sp"
+        android:textSize="14sp"
+        android:text="@string/calculation"
         android:textColor="@color/textGoal" />
 
     <Chronometer
