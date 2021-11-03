@@ -38,6 +38,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -129,7 +130,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             @Override
             public void run() {
                 PredictionARIMA predictionARIMA = new PredictionARIMA();
-                Integer predictionSteps = predictionARIMA.PredictionPerMonthForOneDay(
+                List<Integer> predictionSteps = predictionARIMA.PredictionPerMonthForOneDay(
                         predictionARIMA.CreatePredictionItem(
                                 DateEndPrediction,
                                 selectedDateString,
@@ -137,12 +138,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                                 TimePeriod.oneWeek(),
                                 1)
                 );
+
                 mainTotalMaxTextView.post(new Runnable() {
                     public void run() {
                         mainTotalMaxTextView.setText(
-                                predictionSteps.toString()
+                                predictionSteps.get(0).toString()
                         );
-                        mainProgressCircular.setProgressMax(predictionSteps.floatValue());
+                        mainProgressCircular.setProgressMax(predictionSteps.get(0).floatValue());
                     }
                 });
             }
@@ -164,6 +166,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     saveDataTime();
                     Intent intentHistory = new Intent(MainActivity.this, HistoryActivity.class);
                     MainActivity.this.startActivity(intentHistory);
+                    overridePendingTransition(0,0);
+                    return true;
+                case R.id.menuGoals:
+                    saveDataTime();
+                    Intent intentGoals = new Intent(MainActivity.this, GoalsActivity.class);
+                    MainActivity.this.startActivity(intentGoals);
                     overridePendingTransition(0,0);
                     return true;
             }

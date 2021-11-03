@@ -23,4 +23,8 @@
     <string name="week_activity">Активность за неделю</string>
     <string name="month_activity">Активность по месяцам</string>
     <string name="calculation">Вычисляется...</string>
+    <string name="goals">Цели</string>
+    <string name="waiting_steps_today">Цель количества шагов на сегодня</string>
+    <string name="waiting_steps_week">Ожидаемое количество шагов на неделю</string>
+    <string name="day">День</string>
 </resources>

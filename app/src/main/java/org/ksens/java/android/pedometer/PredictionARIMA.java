@@ -52,30 +52,6 @@ public class PredictionARIMA implements IPredictionARIMADao {
 
     private final Integer WINSORIZING_BOTTOM_LINE = 2000;
 
-    public class ModelARIMA {
-        public Double Steps;
-        public Double Aic;
-        public Integer p;
-        public Integer d;
-        public Integer q;
-        public Integer P;
-        public Integer D;
-        public Integer Q;
-        public ModelARIMA(Double Steps, Double Aic, Integer p, Integer d, Integer q, Integer P, Integer D, Integer Q){
-            this.Steps = Steps;
-            this.Aic = Aic;
-            this.p = p;
-            this.d = d;
-            this.q = q;
-            this.P = P;
-            this.D = D;
-            this.Q = Q;
-        }
-        public Double GetAic(){
-            return this.Aic;
-        }
-    }
-
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public PredictionItem CreatePredictionItem(String dateStart, String dateEnd, TimePeriod period, TimePeriod seasonality, Integer forecast) {
@@ -137,14 +113,14 @@ public class PredictionARIMA implements IPredictionARIMADao {
             }
         }
 
-        newRecordItems.forEach(recordItem -> Log.d("RECORD ", recordItem.getDate() + " " + recordItem.getSteps()));
+        //newRecordItems.forEach(recordItem -> Log.d("RECORD ", recordItem.getDate() + " " + recordItem.getSteps()));
 
         return new PredictionItem(recordItems, dateStart, dateEnd, period, seasonality, forecast);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
-    public Integer PredictionPerMonthForOneDay(PredictionItem predictionItem) {
+    public List<Integer> PredictionPerMonthForOneDay(PredictionItem predictionItem) {
         ArrayList<RecordItem> records = predictionItem.GetRecordItemList();
         double[] steps = new double[records.size()];
         int key = 0;
@@ -166,7 +142,7 @@ public class PredictionARIMA implements IPredictionARIMADao {
                                 ArimaOrder order = ArimaOrder.order(i, j, k, l, m, n);
                                 Arima model = Arima.model(series, order, predictionItem.GetSeasonality());
                                 Forecast forecast = model.forecast(predictionItem.GetForecast());
-                                models.add(new ModelARIMA(forecast.pointEstimates().mean(),model.aic(),i,j,k,l,m,n));
+                                models.add(new ModelARIMA(forecast,model.aic(),i,j,k,l,m,n));
                             }
                         }
                     }
@@ -191,7 +167,12 @@ public class PredictionARIMA implements IPredictionARIMADao {
                 .orElseThrow(NoSuchElementException::new);
         Log.d("Model !!!!!!!", chooseModel.Steps + " " + chooseModel.Aic + " p " + chooseModel.p + " d "+ chooseModel.d + " q "+ chooseModel.q + " P "+ chooseModel.P + " D "+ chooseModel.D + " Q "+ chooseModel.Q + " ");
 
-        return chooseModel.Steps.intValue();
+        ArrayList<Integer> predictionSteps = new ArrayList<>();
+        chooseModel.Steps.pointEstimates().asList().forEach(step -> {
+            predictionSteps.add(step.intValue());
+        });
+
+        return predictionSteps;
     }
 
     private Date ParseDate(String date){

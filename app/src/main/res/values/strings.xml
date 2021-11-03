@@ -22,4 +22,8 @@
     <string name="week_activity">Week Activity</string>
     <string name="month_activity">Month Activity</string>
     <string name="calculation">Сalculated...</string>
+    <string name="goals">Goals</string>
+    <string name="waiting_steps_today">Step count goal for today</string>
+    <string name="waiting_steps_week">Expected number of steps per week</string>
+    <string name="day">Day</string>
 </resources>

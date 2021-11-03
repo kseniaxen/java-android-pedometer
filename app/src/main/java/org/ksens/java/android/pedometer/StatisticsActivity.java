@@ -197,6 +197,11 @@ public class StatisticsActivity extends AppCompatActivity {
                     StatisticsActivity.this.startActivity(intentHistory);
                     overridePendingTransition(0,0);
                     return true;
+                case R.id.menuGoals:
+                    Intent intentGoals = new Intent(StatisticsActivity.this, GoalsActivity.class);
+                    StatisticsActivity.this.startActivity(intentGoals);
+                    overridePendingTransition(0,0);
+                    return true;
             }
             return false;
         });
