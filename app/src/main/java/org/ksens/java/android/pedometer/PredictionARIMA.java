@@ -149,17 +149,6 @@ public class PredictionARIMA implements IPredictionARIMADao {
                 }
             }
         }
-/*
-        ArimaOrder order = ArimaOrder.order(0, 1, 0, 0, 0, 0);
-        Arima model = Arima.model(series, order, predictionItem.GetSeasonality());
-        Forecast forecast = model.forecast(predictionItem.GetForecast());
-        models.add(new ModelARIMA(forecast.pointEstimates().mean(),model.aic(),0, 1, 1, 1, 1, 1));
-
-        models.forEach(model -> {
-            Log.d("Model", model.Steps + " " + model.Aic + " p " + model.p + " d "+ model.d + " q "+ model.q + " P "+ model.P + " D "+ model.D + " Q "+ model.Q + " ");
-        });
-
- */
 
         ModelARIMA chooseModel = models
                 .stream()
@@ -169,7 +158,8 @@ public class PredictionARIMA implements IPredictionARIMADao {
 
         ArrayList<Integer> predictionSteps = new ArrayList<>();
         chooseModel.Steps.pointEstimates().asList().forEach(step -> {
-            predictionSteps.add(step.intValue());
+            int currentStep = (step >= 0) ? step.intValue() : WINSORIZING_BOTTOM_LINE;
+            predictionSteps.add(currentStep);
         });
 
         return predictionSteps;

@@ -70,7 +70,7 @@ public class GoalsActivity extends AppCompatActivity {
                                 DateEndPrediction,
                                 SelectedDateString,
                                 TimePeriod.oneDay(),
-                                TimePeriod.oneWeek(),
+                                TimePeriod.oneDay(),
                                 7)
                 );
                 goalsStepsTakenTextView.post(new Runnable() {

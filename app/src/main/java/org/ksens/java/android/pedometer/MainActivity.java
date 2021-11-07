@@ -39,6 +39,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -68,10 +69,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //RecordItem.deleteAll(RecordItem.class);
-/*
-        String date1 = "01.07.2021";
-        String date2 = "01.08.2021";
+        /*
+        RecordItem.deleteAll(RecordItem.class);
+
+        String date1 = "01.09.2021";
+        String date2 = "06.11.2021";
 
         LocalDate startDate = LocalDate.parse(date1, DateTimeFormatter.ofPattern("dd.MM.yyyy"));
         LocalDate endDate = LocalDate.parse(date2, DateTimeFormatter.ofPattern("dd.MM.yyyy"));
@@ -101,7 +103,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         }
 
- */
+         */
+
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setSelectedItemId(R.id.menuToday);
 
@@ -135,10 +138,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                                 DateEndPrediction,
                                 selectedDateString,
                                 TimePeriod.oneDay(),
-                                TimePeriod.oneWeek(),
+                                TimePeriod.oneDay(),
                                 1)
                 );
-
                 mainTotalMaxTextView.post(new Runnable() {
                     public void run() {
                         mainTotalMaxTextView.setText(
