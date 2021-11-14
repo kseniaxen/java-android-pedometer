@@ -154,11 +154,11 @@ public class PredictionARIMA implements IPredictionARIMADao {
                 .stream()
                 .min(Comparator.comparing(ModelARIMA::GetAic))
                 .orElseThrow(NoSuchElementException::new);
-        Log.d("Model !!!!!!!", chooseModel.Steps + " " + chooseModel.Aic + " p " + chooseModel.p + " d "+ chooseModel.d + " q "+ chooseModel.q + " P "+ chooseModel.P + " D "+ chooseModel.D + " Q "+ chooseModel.Q + " ");
+        //Log.d("Model !!!!!!!", chooseModel.Steps + " " + chooseModel.Aic + " p " + chooseModel.p + " d "+ chooseModel.d + " q "+ chooseModel.q + " P "+ chooseModel.P + " D "+ chooseModel.D + " Q "+ chooseModel.Q + " ");
 
         ArrayList<Integer> predictionSteps = new ArrayList<>();
         chooseModel.Steps.pointEstimates().asList().forEach(step -> {
-            int currentStep = (step >= 0) ? step.intValue() : WINSORIZING_BOTTOM_LINE;
+            int currentStep = (step >= WINSORIZING_BOTTOM_LINE) ? step.intValue() : WINSORIZING_BOTTOM_LINE;
             predictionSteps.add(currentStep);
         });
 
