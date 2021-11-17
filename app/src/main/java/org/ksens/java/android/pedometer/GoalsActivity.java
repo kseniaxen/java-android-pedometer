@@ -130,6 +130,11 @@ public class GoalsActivity extends AppCompatActivity {
                     GoalsActivity.this.startActivity(intentStatistics);
                     overridePendingTransition(0,0);
                     return true;
+                case R.id.menuSettings:
+                    Intent intentSettings = new Intent(GoalsActivity.this, SettingsActivity.class);
+                    GoalsActivity.this.startActivity(intentSettings);
+                    overridePendingTransition(0,0);
+                    return true;
             }
             return false;
         });

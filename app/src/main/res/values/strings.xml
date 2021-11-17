@@ -26,4 +26,7 @@
     <string name="waiting_steps_today">Step count goal for today</string>
     <string name="waiting_steps_week">Expected number of steps per week</string>
     <string name="day">Day</string>
+    <string name="dialogApplyAge">Input your age</string>
+    <string name="settings">Settings</string>
+    <string name="dialogAge">Change age</string>
 </resources>

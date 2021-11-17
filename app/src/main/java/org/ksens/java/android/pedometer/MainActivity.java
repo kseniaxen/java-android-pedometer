@@ -24,6 +24,7 @@ import android.view.View;
 import android.widget.Chronometer;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -51,11 +52,14 @@ import java.util.stream.Stream;
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
     private final double HUMAN_STEP_LENGTH_M = 0.7;
+    private final Integer MIN_AGE = 1;
+    private final Integer MAX_AGE = 100;
     private SensorManager sensorManager;
 
     private boolean running = false;
     private float totalSteps = 0f;
     private float previousTotalSteps = 0f;
+    private Integer Age = MIN_AGE;
 
     private Long pauseAt = 0L;
 
@@ -68,6 +72,37 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        if(loadDataAge() <= 0){
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+            builder.setTitle(R.string.dialogApplyAge);
+            builder.setCancelable(false);
+            final NumberPicker numberPicker = new NumberPicker(MainActivity.this);
+            numberPicker.setMinValue(MIN_AGE);
+            numberPicker.setMaxValue(MAX_AGE);
+            numberPicker.setWrapSelectorWheel(false);
+            numberPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+                @Override
+                public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                    Age = newVal;
+                }
+            });
+            builder.setView(numberPicker);
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    saveDataAge(Age);
+                }
+            });
+            AlertDialog dialog = builder.create();
+            dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                @Override
+                public void onShow(DialogInterface arg0) {
+                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(getResources().getColor(R.color.primary));
+                }
+            });
+            dialog.show();
+        }
 
         /*
         RecordItem.deleteAll(RecordItem.class);
@@ -174,6 +209,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     saveDataTime();
                     Intent intentGoals = new Intent(MainActivity.this, GoalsActivity.class);
                     MainActivity.this.startActivity(intentGoals);
+                    overridePendingTransition(0,0);
+                    return true;
+                case R.id.menuSettings:
+                    saveDataTime();
+                    Intent intentSettings = new Intent(MainActivity.this, SettingsActivity.class);
+                    MainActivity.this.startActivity(intentSettings);
                     overridePendingTransition(0,0);
                     return true;
             }
@@ -314,6 +355,18 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putLong("time",SystemClock.elapsedRealtime() - mainTimeChronometer.getBase());
         editor.apply();
+    }
+
+    private void saveDataAge(int age) {
+        SharedPreferences sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt("age", age);
+        editor.apply();
+    }
+
+    private int loadDataAge(){
+        SharedPreferences sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE);
+        return sharedPreferences.getInt("age",0);
     }
 
     private void loadData(){

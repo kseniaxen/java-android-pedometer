@@ -19,6 +19,9 @@
         <meta-data android:name="QUERY_LOG" android:value="true" />
         <meta-data android:name="DOMAIN_PACKAGE_NAME" android:value="org.ksens.java.android.pedometer" />
         <activity
+            android:name=".SettingsActivity"
+            android:screenOrientation="portrait"/>
+        <activity
             android:name=".GoalsActivity"
             android:screenOrientation="portrait"/>
         <activity

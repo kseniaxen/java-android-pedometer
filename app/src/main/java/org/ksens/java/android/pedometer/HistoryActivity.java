@@ -47,6 +47,11 @@ public class HistoryActivity extends AppCompatActivity {
                     HistoryActivity.this.startActivity(intentGoals);
                     overridePendingTransition(0,0);
                     return true;
+                case R.id.menuSettings:
+                    Intent intentSettings = new Intent(HistoryActivity.this, SettingsActivity.class);
+                    HistoryActivity.this.startActivity(intentSettings);
+                    overridePendingTransition(0,0);
+                    return true;
             }
             return false;
         });

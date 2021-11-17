@@ -27,4 +27,7 @@
     <string name="waiting_steps_today">Цель количества шагов на сегодня</string>
     <string name="waiting_steps_week">Ожидаемое количество шагов на неделю</string>
     <string name="day">День</string>
+    <string name="dialogApplyAge">Укажите ваш возраст</string>
+    <string name="settings">Настройки</string>
+    <string name="dialogAge">Изменить возраст</string>
 </resources>

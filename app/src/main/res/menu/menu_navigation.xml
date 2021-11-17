@@ -21,4 +21,9 @@
         android:title="@string/goals"
         android:icon="@drawable/ic_goals"/>
 
+    <item
+        android:id="@+id/menuSettings"
+        android:title="@string/settings"
+        android:icon="@drawable/ic_settings"/>
+
 </menu>

@@ -27,4 +27,7 @@
     <string name="waiting_steps_today">Мета кількості кроків на сьогодні</string>
     <string name="waiting_steps_week">Очікувана кількість кроків на тиждень</string>
     <string name="day">День</string>
+    <string name="dialogApplyAge">Вкажіть ваш вік</string>
+    <string name="settings">Налаштування</string>
+    <string name="dialogAge">Змінити вік</string>
 </resources>
