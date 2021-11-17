@@ -1,5 +1,7 @@
 package org.ksens.java.android.pedometer;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.util.Log;
 import android.view.Display;
@@ -50,11 +52,16 @@ public class PredictionARIMA implements IPredictionARIMADao {
     private final Integer END_D = 1;
     private final Integer END_Q = 1;
 
-    private final Integer WINSORIZING_BOTTOM_LINE = 2000;
+    private Integer WinsorizingValue = 0;
+
+    public PredictionARIMA(int age){
+        this.WinsorizingValue = GetWinsorizingValue(age);
+    }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public PredictionItem CreatePredictionItem(String dateStart, String dateEnd, TimePeriod period, TimePeriod seasonality, Integer forecast) {
+
         ArrayList<RecordItem> recordItems = new ArrayList<>();
         List<RecordItem> itemsQuery = RecordItem.findWithQuery(RecordItem.class, "SELECT * FROM RECORD_ITEM");
 
@@ -86,9 +93,9 @@ public class PredictionARIMA implements IPredictionARIMADao {
         });
         listOfNoUseDates.forEach(date ->
             recordItems.add(new RecordItem(
-                    WINSORIZING_BOTTOM_LINE,
+                    WinsorizingValue,
                     0L,
-                    calcKilometers(WINSORIZING_BOTTOM_LINE),
+                    calcKilometers(WinsorizingValue),
                     date.format(DateFormat)
             ))
         );
@@ -108,8 +115,8 @@ public class PredictionARIMA implements IPredictionARIMADao {
         newRecordItems.sort((a,b) -> ParseDate(a.getDate()).compareTo(ParseDate(b.getDate())));
 
         for(RecordItem recordItem: newRecordItems){
-            if(recordItem.getSteps() < WINSORIZING_BOTTOM_LINE) {
-                recordItem.setSteps(WINSORIZING_BOTTOM_LINE);
+            if(recordItem.getSteps() < WinsorizingValue) {
+                recordItem.setSteps(WinsorizingValue);
             }
         }
 
@@ -158,7 +165,7 @@ public class PredictionARIMA implements IPredictionARIMADao {
 
         ArrayList<Integer> predictionSteps = new ArrayList<>();
         chooseModel.Steps.pointEstimates().asList().forEach(step -> {
-            int currentStep = (step >= WINSORIZING_BOTTOM_LINE) ? step.intValue() : WINSORIZING_BOTTOM_LINE;
+            int currentStep = (step >= WinsorizingValue) ? step.intValue() : WinsorizingValue;
             predictionSteps.add(currentStep);
         });
 
@@ -178,4 +185,17 @@ public class PredictionARIMA implements IPredictionARIMADao {
     private double calcKilometers(int steps){
         return (steps*HUMAN_STEP_LENGTH_M)/1000;
     }
+
+    private int GetWinsorizingValue(int age){
+        if(age <= 11){
+            return 10000;
+        }else if(12 <= age && age <= 19){
+            return 9000;
+        }else if(20 <= age && age <= 65) {
+            return 7000;
+        }else{
+            return 5000;
+        }
+    }
+
 }

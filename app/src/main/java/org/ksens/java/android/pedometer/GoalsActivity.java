@@ -1,6 +1,8 @@
 package org.ksens.java.android.pedometer;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -64,7 +66,7 @@ public class GoalsActivity extends AppCompatActivity {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                PredictionARIMA predictionARIMA = new PredictionARIMA();
+                PredictionARIMA predictionARIMA = new PredictionARIMA(LoadDataAge());
                 List<Integer> predictionSteps = predictionARIMA.PredictionPerMonthForOneDay(
                         predictionARIMA.CreatePredictionItem(
                                 DateEndPrediction,
@@ -84,22 +86,22 @@ public class GoalsActivity extends AppCompatActivity {
                     public void run() {
                         goalsTableLayout.removeAllViews();
                         TableRow row = (TableRow) LayoutInflater.from(GoalsActivity.this).inflate(getResources().getLayout(R.layout.table_row), null);
-                        ((TextView)row.findViewById(R.id.attrib_name)).setAllCaps(false);
-                        ((TextView)row.findViewById(R.id.attrib_value)).setAllCaps(false);
-                        ((TextView)row.findViewById(R.id.attrib_name)).setText(getResources().getString(R.string.days));
-                        ((TextView)row.findViewById(R.id.attrib_value)).setText(getResources().getString(R.string.steps));
-                        ((TextView)row.findViewById(R.id.attrib_name)).setTextSize(20);
-                        ((TextView)row.findViewById(R.id.attrib_value)).setTextSize(20);
-                        ((TextView)row.findViewById(R.id.attrib_name)).setPadding(0, 0, 0, 15);
-                        ((TextView)row.findViewById(R.id.attrib_value)).setPadding(0, 0, 0, 15);
+                        ((TextView) row.findViewById(R.id.attrib_name)).setAllCaps(false);
+                        ((TextView) row.findViewById(R.id.attrib_value)).setAllCaps(false);
+                        ((TextView) row.findViewById(R.id.attrib_name)).setText(getResources().getString(R.string.days));
+                        ((TextView) row.findViewById(R.id.attrib_value)).setText(getResources().getString(R.string.steps));
+                        ((TextView) row.findViewById(R.id.attrib_name)).setTextSize(20);
+                        ((TextView) row.findViewById(R.id.attrib_value)).setTextSize(20);
+                        ((TextView) row.findViewById(R.id.attrib_name)).setPadding(0, 0, 0, 15);
+                        ((TextView) row.findViewById(R.id.attrib_value)).setPadding(0, 0, 0, 15);
                         row.setBackgroundColor(getResources().getColor(R.color.white));
                         goalsTableLayout.addView(row);
-                        for (int i = 1; i < days.size(); i++){
+                        for (int i = 1; i < days.size(); i++) {
                             row = (TableRow) LayoutInflater.from(GoalsActivity.this).inflate(getResources().getLayout(R.layout.table_row), null);
-                            ((TextView)row.findViewById(R.id.attrib_name)).setText(days.get(i));
-                            ((TextView)row.findViewById(R.id.attrib_value)).setText(predictionSteps.get(i).toString());
-                            ((TextView)row.findViewById(R.id.attrib_name)).setPadding(0, 0, 0, 10);
-                            ((TextView)row.findViewById(R.id.attrib_value)).setPadding(0, 0, 0, 10);
+                            ((TextView) row.findViewById(R.id.attrib_name)).setText(days.get(i));
+                            ((TextView) row.findViewById(R.id.attrib_value)).setText(predictionSteps.get(i).toString());
+                            ((TextView) row.findViewById(R.id.attrib_name)).setPadding(0, 0, 0, 10);
+                            ((TextView) row.findViewById(R.id.attrib_value)).setPadding(0, 0, 0, 10);
                             row.setBackgroundColor(getResources().getColor(R.color.white));
                             goalsTableLayout.addView(row);
                         }
@@ -111,32 +113,37 @@ public class GoalsActivity extends AppCompatActivity {
         Thread thread = new Thread(runnable);
         thread.start();
 
-        bottomNavigationView.setOnNavigationItemSelectedListener((menuItem)->{
-            switch(menuItem.getItemId()){
+        bottomNavigationView.setOnNavigationItemSelectedListener((menuItem) -> {
+            switch (menuItem.getItemId()) {
                 case R.id.menuGoals:
                     return true;
                 case R.id.menuToday:
                     Intent intentToday = new Intent(GoalsActivity.this, MainActivity.class);
                     GoalsActivity.this.startActivity(intentToday);
-                    overridePendingTransition(0,0);
+                    overridePendingTransition(0, 0);
                     return true;
                 case R.id.menuHistory:
                     Intent intentHistory = new Intent(GoalsActivity.this, HistoryActivity.class);
                     GoalsActivity.this.startActivity(intentHistory);
-                    overridePendingTransition(0,0);
+                    overridePendingTransition(0, 0);
                     return true;
                 case R.id.menuStatistics:
                     Intent intentStatistics = new Intent(GoalsActivity.this, StatisticsActivity.class);
                     GoalsActivity.this.startActivity(intentStatistics);
-                    overridePendingTransition(0,0);
+                    overridePendingTransition(0, 0);
                     return true;
                 case R.id.menuSettings:
                     Intent intentSettings = new Intent(GoalsActivity.this, SettingsActivity.class);
                     GoalsActivity.this.startActivity(intentSettings);
-                    overridePendingTransition(0,0);
+                    overridePendingTransition(0, 0);
                     return true;
             }
             return false;
         });
+    }
+
+    public int LoadDataAge(){
+        SharedPreferences sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE);
+        return sharedPreferences.getInt("age",0);
     }
 }

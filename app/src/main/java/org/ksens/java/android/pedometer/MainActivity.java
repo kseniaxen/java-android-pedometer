@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if(loadDataAge() <= 0){
+        if(LoadDataAge() <= 0){
             AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
             builder.setTitle(R.string.dialogApplyAge);
             builder.setCancelable(false);
@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    saveDataAge(Age);
+                    SaveDataAge(Age);
                 }
             });
             AlertDialog dialog = builder.create();
@@ -167,7 +167,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                PredictionARIMA predictionARIMA = new PredictionARIMA();
+                PredictionARIMA predictionARIMA = new PredictionARIMA(LoadDataAge());
                 List<Integer> predictionSteps = predictionARIMA.PredictionPerMonthForOneDay(
                         predictionARIMA.CreatePredictionItem(
                                 DateEndPrediction,
@@ -357,14 +357,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         editor.apply();
     }
 
-    private void saveDataAge(int age) {
+    public void SaveDataAge(int age) {
         SharedPreferences sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putInt("age", age);
         editor.apply();
     }
 
-    private int loadDataAge(){
+    public int LoadDataAge(){
         SharedPreferences sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE);
         return sharedPreferences.getInt("age",0);
     }

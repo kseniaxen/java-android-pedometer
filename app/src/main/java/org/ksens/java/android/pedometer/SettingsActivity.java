@@ -35,7 +35,7 @@ public class SettingsActivity extends AppCompatActivity {
                 final NumberPicker numberPicker = new NumberPicker(SettingsActivity.this);
                 numberPicker.setMinValue(MIN_AGE);
                 numberPicker.setMaxValue(MAX_AGE);
-                numberPicker.setValue(loadDataAge());
+                numberPicker.setValue(LoadDataAge());
                 numberPicker.setWrapSelectorWheel(false);
                 numberPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
                     @Override
@@ -47,7 +47,7 @@ public class SettingsActivity extends AppCompatActivity {
                 builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        saveDataAge(Age);
+                        SaveDataAge(Age);
                     }
                 });
                 AlertDialog dialog = builder.create();
@@ -90,14 +90,14 @@ public class SettingsActivity extends AppCompatActivity {
         });
     }
 
-    private void saveDataAge(int age) {
+    private void SaveDataAge(int age) {
         SharedPreferences sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putInt("age", age);
         editor.apply();
     }
 
-    private int loadDataAge(){
+    private int LoadDataAge(){
         SharedPreferences sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE);
         return sharedPreferences.getInt("age",0);
     }
