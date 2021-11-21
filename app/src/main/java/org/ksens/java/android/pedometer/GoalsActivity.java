@@ -67,7 +67,7 @@ public class GoalsActivity extends AppCompatActivity {
             @Override
             public void run() {
                 PredictionARIMA predictionARIMA = new PredictionARIMA(LoadDataAge());
-                List<Integer> predictionSteps = predictionARIMA.PredictionPerMonthForOneDay(
+                List<Integer> predictionSteps = predictionARIMA.GetPredictionValues(
                         predictionARIMA.CreatePredictionItem(
                                 DateEndPrediction,
                                 SelectedDateString,

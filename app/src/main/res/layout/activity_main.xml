@@ -75,8 +75,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/mainProgressCircular"
-        android:layout_marginBottom="30dp"
+        android:layout_centerVertical="true"
         android:layout_centerInParent="true"
+        android:layout_marginBottom="31dp"
         android:fontFamily="sans-serif-light"
         android:textColor="@color/select"
         android:textSize="30sp" />

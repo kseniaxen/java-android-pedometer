@@ -168,7 +168,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             @Override
             public void run() {
                 PredictionARIMA predictionARIMA = new PredictionARIMA(LoadDataAge());
-                List<Integer> predictionSteps = predictionARIMA.PredictionPerMonthForOneDay(
+                List<Integer> predictionSteps = predictionARIMA.GetPredictionValues(
                         predictionARIMA.CreatePredictionItem(
                                 DateEndPrediction,
                                 selectedDateString,

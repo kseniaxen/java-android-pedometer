@@ -53,6 +53,7 @@ public class PredictionARIMA implements IPredictionARIMADao {
     private final Integer END_Q = 1;
 
     private Integer WinsorizingValue = 0;
+    private IRecordDao recordDao = Global.recordDao;
 
     public PredictionARIMA(int age){
         this.WinsorizingValue = GetWinsorizingValue(age);
@@ -63,8 +64,9 @@ public class PredictionARIMA implements IPredictionARIMADao {
     public PredictionItem CreatePredictionItem(String dateStart, String dateEnd, TimePeriod period, TimePeriod seasonality, Integer forecast) {
 
         ArrayList<RecordItem> recordItems = new ArrayList<>();
-        List<RecordItem> itemsQuery = RecordItem.findWithQuery(RecordItem.class, "SELECT * FROM RECORD_ITEM");
+        //List<RecordItem> itemsQuery = RecordItem.findWithQuery(RecordItem.class, "SELECT * FROM RECORD_ITEM");
 
+        List<RecordItem> itemsQuery = recordDao.findAll();
         LocalDate startDate = LocalDate.parse(dateStart, DateFormat);
         LocalDate endDate = LocalDate.parse(dateEnd, DateFormat);
 
@@ -95,7 +97,7 @@ public class PredictionARIMA implements IPredictionARIMADao {
             recordItems.add(new RecordItem(
                     WinsorizingValue,
                     0L,
-                    calcKilometers(WinsorizingValue),
+                    CalcKilometers(WinsorizingValue),
                     date.format(DateFormat)
             ))
         );
@@ -115,7 +117,7 @@ public class PredictionARIMA implements IPredictionARIMADao {
         newRecordItems.sort((a,b) -> ParseDate(a.getDate()).compareTo(ParseDate(b.getDate())));
 
         for(RecordItem recordItem: newRecordItems){
-            if(recordItem.getSteps() < WinsorizingValue) {
+            if(recordItem.getSteps() <= 0) {
                 recordItem.setSteps(WinsorizingValue);
             }
         }
@@ -127,7 +129,7 @@ public class PredictionARIMA implements IPredictionARIMADao {
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
-    public List<Integer> PredictionPerMonthForOneDay(PredictionItem predictionItem) {
+    public List<Integer> GetPredictionValues(PredictionItem predictionItem) {
         ArrayList<RecordItem> records = predictionItem.GetRecordItemList();
         double[] steps = new double[records.size()];
         int key = 0;
@@ -182,7 +184,7 @@ public class PredictionARIMA implements IPredictionARIMADao {
         return null;
     }
 
-    private double calcKilometers(int steps){
+    private double CalcKilometers(int steps){
         return (steps*HUMAN_STEP_LENGTH_M)/1000;
     }
 
