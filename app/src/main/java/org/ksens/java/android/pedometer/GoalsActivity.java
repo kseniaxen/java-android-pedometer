@@ -41,17 +41,13 @@ public class GoalsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_goals);
-
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setSelectedItemId(R.id.menuGoals);
         TableLayout goalsTableLayout = findViewById(R.id.goalsTableLayout);
         TextView goalsStepsTakenTextView = findViewById(R.id.goalsStepsTakenTextView);
-
         LocalDate startDate = LocalDate.parse(SelectedDateString, DateFormat);
         LocalDate endDate = LocalDate.parse(DatesWeekEndPrediction, DateFormat);
-
         long numOfDays = ChronoUnit.DAYS.between(startDate, endDate);
-
         List<LocalDate> listOfDates = Stream.iterate(startDate, date -> date.plusDays(1))
                 .limit(numOfDays)
                 .collect(Collectors.toList());
@@ -62,7 +58,6 @@ public class GoalsActivity extends AppCompatActivity {
                     .atZone(ZoneId.systemDefault())
                     .toInstant())));
         });
-
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
@@ -72,13 +67,13 @@ public class GoalsActivity extends AppCompatActivity {
                                 DateEndPrediction,
                                 SelectedDateString,
                                 TimePeriod.oneDay(),
-                                TimePeriod.oneDay(),
+                                TimePeriod.oneWeek(),
                                 7)
                 );
                 goalsStepsTakenTextView.post(new Runnable() {
                     public void run() {
                         goalsStepsTakenTextView.setText(
-                                predictionSteps.get(0).toString()
+                                (LoadTodaySteps()>=0)? String.valueOf(LoadTodaySteps()):predictionSteps.get(0).toString()
                         );
                     }
                 });
@@ -112,7 +107,6 @@ public class GoalsActivity extends AppCompatActivity {
         };
         Thread thread = new Thread(runnable);
         thread.start();
-
         bottomNavigationView.setOnNavigationItemSelectedListener((menuItem) -> {
             switch (menuItem.getItemId()) {
                 case R.id.menuGoals:
@@ -141,9 +135,12 @@ public class GoalsActivity extends AppCompatActivity {
             return false;
         });
     }
-
     public int LoadDataAge(){
         SharedPreferences sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE);
         return sharedPreferences.getInt("age",0);
+    }
+    public int LoadTodaySteps(){
+        SharedPreferences sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE);
+        return sharedPreferences.getInt("steps_today",0);
     }
 }

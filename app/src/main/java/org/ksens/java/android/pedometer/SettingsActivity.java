@@ -22,11 +22,9 @@ public class SettingsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
-
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setSelectedItemId(R.id.menuSettings);
         Button settingsAgeButton = findViewById(R.id.settingsAgeButton);
-
         settingsAgeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -60,7 +58,6 @@ public class SettingsActivity extends AppCompatActivity {
                 dialog.show();
             }
         });
-
         bottomNavigationView.setOnNavigationItemSelectedListener((menuItem)->{
             switch(menuItem.getItemId()){
                 case R.id.menuSettings:
@@ -89,14 +86,12 @@ public class SettingsActivity extends AppCompatActivity {
             return false;
         });
     }
-
     private void SaveDataAge(int age) {
         SharedPreferences sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putInt("age", age);
         editor.apply();
     }
-
     private int LoadDataAge(){
         SharedPreferences sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE);
         return sharedPreferences.getInt("age",0);

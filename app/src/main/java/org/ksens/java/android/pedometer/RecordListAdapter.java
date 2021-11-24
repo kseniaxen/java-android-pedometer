@@ -24,7 +24,6 @@ public class RecordListAdapter extends ArrayAdapter<RecordItem> {
     private List<RecordItem> items;
     private Context context;
     private DecimalFormat df;
-
     // конструктор, который принимает ссылку на активити, дескриптор представления,
     // список моделей данных
     public RecordListAdapter(@NonNull Context context, int resource, @NonNull List<RecordItem> objects) {
@@ -41,7 +40,6 @@ public class RecordListAdapter extends ArrayAdapter<RecordItem> {
         // инициализация поля графического контекста
         this.context = context;
     }
-
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
@@ -57,10 +55,8 @@ public class RecordListAdapter extends ArrayAdapter<RecordItem> {
         TextView kmView = view.findViewById(R.id.recordListItemKmTextView);
         //с конца списка (индекс, начиная с последнего)
         RecordItem item = items.get(position);
-
         DateFormat outputFormat = new SimpleDateFormat("MM/dd");
         DateFormat inputFormat = new SimpleDateFormat("dd.MM.yyyy");
-
         String inputText = item.getDate();
         Date date = null;
         try {
@@ -70,12 +66,10 @@ public class RecordListAdapter extends ArrayAdapter<RecordItem> {
         }
         String outputText = outputFormat.format(date);
         dateView.setText(outputText);
-
         SimpleDateFormat timeFormat = new SimpleDateFormat("mm:ss");
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(item.getTime());
         timeView.setText(timeFormat.format(calendar.getTime()));
-
         stepsView.setText(item.getSteps().toString());
         df = new DecimalFormat("#.##");
         kmView.setText(df.format(item.getKm()));

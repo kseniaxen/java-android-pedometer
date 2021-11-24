@@ -167,7 +167,7 @@ public class PredictionARIMA implements IPredictionARIMADao {
 
         ArrayList<Integer> predictionSteps = new ArrayList<>();
         chooseModel.Steps.pointEstimates().asList().forEach(step -> {
-            int currentStep = (step >= WinsorizingValue) ? step.intValue() : WinsorizingValue;
+            int currentStep = (step > 0) ? step.intValue() : WinsorizingValue;
             predictionSteps.add(currentStep);
         });
 

@@ -50,29 +50,23 @@ import java.util.stream.Stream;
 
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
-
     private final double HUMAN_STEP_LENGTH_M = 0.7;
     private final Integer MIN_AGE = 1;
     private final Integer MAX_AGE = 100;
     private SensorManager sensorManager;
-
     private boolean running = false;
     private float totalSteps = 0f;
     private float previousTotalSteps = 0f;
     private Integer Age = MIN_AGE;
-
     private Long pauseAt = 0L;
-
     private final String selectedDateString =
             new SimpleDateFormat("dd.MM.yyyy").format(new Date());
     private final String DateEndPrediction = new SimpleDateFormat("dd.MM.yyyy").format(new Date().from(LocalDate.now().minusDays(31).atStartOfDay(ZoneId.systemDefault()).toInstant()));
     private IRecordDao recordDao = Global.recordDao;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         if(LoadDataAge() <= 0){
             AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
             builder.setTitle(R.string.dialogApplyAge);
@@ -103,46 +97,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             });
             dialog.show();
         }
-
-        /*
-        RecordItem.deleteAll(RecordItem.class);
-
-        String date1 = "01.09.2021";
-        String date2 = "06.11.2021";
-
-        LocalDate startDate = LocalDate.parse(date1, DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-        LocalDate endDate = LocalDate.parse(date2, DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-
-        long numOfDays = ChronoUnit.DAYS.between(startDate, endDate);
-
-        List<LocalDate> listOfDates = Stream.iterate(startDate, date -> date.plusDays(1))
-                .limit(numOfDays)
-                .collect(Collectors.toList());
-
-        Random random = new Random();
-        for(LocalDate localDate: listOfDates) {
-            int steps =  random.nextInt((8000 - 1500) + 1) + 1500;
-
-            recordDao.save(new RecordItem(
-                    steps,
-                    Long.parseLong(String.valueOf(random.nextInt((100000 - 50000) + 1) + 50000)),
-                    calcKilometers(steps),
-                    localDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))
-            ));
-
-            Log.d("Day Steps Km Time", localDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")) + " " +
-                    steps + " " +
-                    steps * 0.7/1000 + " " +
-                    Long.parseLong(String.valueOf(random.nextInt((100000 - 50000) + 1) + 50000)));
-
-
-        }
-
-         */
-
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setSelectedItemId(R.id.menuToday);
-
         TextView mainStepsTakenTextView = findViewById(R.id.mainStepsTakenTextView);
         Shader textShader = new LinearGradient(0, 0, 0, mainStepsTakenTextView.getTextSize(),
                 new int[]{
@@ -158,12 +114,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         CircularProgressBar mainProgressCircular = findViewById(R.id.mainProgressCircular);
         Chronometer mainTimeChronometer = findViewById(R.id.mainTimeChronometer);
         TextView mainDateTextView = findViewById(R.id.mainDateTextView);
-
         Date currentDate = new Date();
         DateFormat dateFormat = new SimpleDateFormat("EEEE, d MMM", Locale.getDefault());
         mainDateTextView.setText(dateFormat.format(currentDate));
         loadData();
-
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
@@ -182,13 +136,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                                 predictionSteps.get(0).toString()
                         );
                         mainProgressCircular.setProgressMax(predictionSteps.get(0).floatValue());
+                        saveTodaySteps(predictionSteps.get(0));
                     }
                 });
             }
         };
         Thread thread = new Thread(runnable);
         thread.start();
-
         bottomNavigationView.setOnNavigationItemSelectedListener((menuItem)->{
             switch(menuItem.getItemId()){
                 case R.id.menuStatistics:
@@ -220,7 +174,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             }
             return false;
         });
-
         mainStartButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -228,19 +181,15 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 mainTimeChronometer.start();
                 Sensor stepSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
                 sensorManager.registerListener(MainActivity.this,stepSensor,SensorManager.SENSOR_DELAY_UI);
-
                 mainPauseButton.setVisibility(View.VISIBLE);
                 mainPauseButton.setEnabled(true);
-
                 mainResetButton.setVisibility(View.VISIBLE);
                 mainResetButton.setEnabled(true);
-
                 mainStartButton.setVisibility(View.INVISIBLE);
                 mainStartButton.setEnabled(false);
                 running = true;
             }
         });
-
         mainPauseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -252,7 +201,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 running = false;
             }
         });
-
         mainResetButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -262,13 +210,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 pauseAt = 0L;
                 mainPauseButton.setVisibility(View.INVISIBLE);
                 mainPauseButton.setEnabled(false);
-
                 mainResetButton.setVisibility(View.INVISIBLE);
                 mainResetButton.setEnabled(false);
-
                 mainStartButton.setVisibility(View.VISIBLE);
                 mainStartButton.setEnabled(true);
-
                 Integer currentSteps = (int)totalSteps - (int)previousTotalSteps;
                 if(currentSteps > 0){
                     recordDao.save(new RecordItem(
@@ -288,11 +233,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 sensorManager.unregisterListener(MainActivity.this);
             }
         });
-
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         sensorManager.unregisterListener(this);
     }
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -305,14 +248,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             }
         }
     }
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
         running = false;
         sensorManager.unregisterListener(MainActivity.this);
     }
-
     @Override
     protected void onPause() {
         super.onPause();
@@ -320,8 +261,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             sensorManager.unregisterListener(MainActivity.this);
         }
     }
-
-
     @Override
     public void onSensorChanged(SensorEvent event) {
         if(running){
@@ -336,19 +275,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             mainProgressCircular.setProgress(currentSteps.floatValue());
         }
     }
-
     @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
-    }
-
+    public void onAccuracyChanged(Sensor sensor, int accuracy) { }
     private void saveData() {
         SharedPreferences sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putFloat("key",previousTotalSteps);
         editor.apply();
     }
-
     private void saveDataTime(){
         Chronometer mainTimeChronometer = findViewById(R.id.mainTimeChronometer);
         SharedPreferences sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE);
@@ -356,19 +290,22 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         editor.putLong("time",SystemClock.elapsedRealtime() - mainTimeChronometer.getBase());
         editor.apply();
     }
-
     public void SaveDataAge(int age) {
         SharedPreferences sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putInt("age", age);
         editor.apply();
     }
-
+    private void saveTodaySteps(int steps) {
+        SharedPreferences sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt("steps_today",steps);
+        editor.apply();
+    }
     public int LoadDataAge(){
         SharedPreferences sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE);
         return sharedPreferences.getInt("age",0);
     }
-
     private void loadData(){
         SharedPreferences sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE);
         float savedNumber = sharedPreferences.getFloat("key", 0f);
@@ -376,7 +313,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         long savedTime = sharedPreferences.getLong("time", 0L);
         pauseAt = savedTime;
     }
-
     private double calcKilometers(int steps){
         return (steps*HUMAN_STEP_LENGTH_M)/1000;
     }
